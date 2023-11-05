@@ -1,0 +1,40 @@
+{
+    "player": {
+        "position": [
+            0,
+            0,
+            0
+        ],
+        "Info": {
+            "level": 1,
+            "exp": 0,
+            "stats": {
+                "melee": {
+                    "level": 1,
+                    "exp": 0
+                },
+                "range": {
+                    "leve": 1,
+                    "exp": 0
+                },
+                "mage": {
+                    "level": 1,
+                    "exp": 0
+                },
+                "defense": {
+                    "level": 1,
+                    "exp": 0
+                }
+            }
+        },
+        "equipment": {},
+        "inventory": {
+            "0": 10,
+            "1": 12
+        },
+        "currency": {
+            "gold": 0,
+            "diamond": 0
+        }
+    }
+}

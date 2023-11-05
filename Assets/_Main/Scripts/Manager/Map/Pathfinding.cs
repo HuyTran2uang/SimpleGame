@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace SimpleGame
 {
-    public class MapManager
+    public class Pathfinding
     {
-        Node[,] _grid;
+
     }
 }

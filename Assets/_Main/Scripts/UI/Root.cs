@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SimpleGame
+namespace SimpleGame.UI
 {
-    public class MapManager
+    public class Root : MonoBehaviour
     {
-        Node[,] _grid;
+
     }
 }

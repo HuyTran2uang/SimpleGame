@@ -6,6 +6,9 @@ namespace SimpleGame
 {
     public class PlayerController : MonoBehaviour
     {
+        public void Init()
+        {
 
+        }
     }
 }
