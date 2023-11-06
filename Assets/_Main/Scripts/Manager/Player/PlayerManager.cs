@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace SimpleGame
 {
+    [System.Serializable]
     public class PlayerManager
     {
         [SerializeField] PlayerController _playerCtrlPrefab;
 
-        public void SpawnPlayer(MonoBehaviour mono)
+        public void SpawnPlayer()
         {
             var ctrl = MonoBehaviour.Instantiate(_playerCtrlPrefab);
         }
