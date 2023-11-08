@@ -16,7 +16,7 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
                     Debug.LogError("There is more than one " + typeof(T).Name + " in the scene.");
                 if (_instance == null)
                 {
-                    GameObject obj = new GameObject();
+                    GameObject obj = new GameObject(typeof(T).ToString());
                     _instance = obj.AddComponent<T>();
                 }
             }
