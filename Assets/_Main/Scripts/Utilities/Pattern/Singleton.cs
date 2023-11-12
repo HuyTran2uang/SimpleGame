@@ -29,7 +29,7 @@ public class MonoBehaviourSingletonPersistent<T> : MonoBehaviour where T : MonoB
 {
     public static T Instance { get; private set; }
 
-    protected virtual void Awake()
+    private void Awake()
     {
         if (Instance == null)
         {

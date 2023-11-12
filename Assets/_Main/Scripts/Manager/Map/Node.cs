@@ -1,20 +1,23 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Node
 {
-    public Vector2 Coordinate { get; private set; }
-    public bool IsWalkable { get; private set; }
-    public Vector3 Center { get; private set; }
-    public int GCost { get; set; }
-    public int HCost { get; set; }
-    public int FCost => GCost + HCost;
+    public int x, y;
+    public bool isWalkable;
+    public Vector3 center;
+    public Node parent;
+    public List<Node> neighbours;
+    public int gCost;
+    public int hCost;
+    public int fCost => gCost + hCost;
 
-    public Node(Vector2 coordinate, bool isWalkable, Vector3 center)
+    public Node(int x, int y, bool isWalkable, Vector3 center)
     {
-        Coordinate = coordinate;
-        IsWalkable = isWalkable;
-        Center = center;
+        this.x = x;
+        this.y = y;
+        this.isWalkable = isWalkable;
+        this.center = center;
+        neighbours = new List<Node>();
     }
 }
