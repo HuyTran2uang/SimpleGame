@@ -4,7 +4,7 @@ using UnityEngine;
 public class Node
 {
     public int x, y;
-    public bool isWalkable;
+    public bool walkable;
     public Vector3 center;
     public Node parent;
     public List<Node> neighbours;
@@ -16,7 +16,7 @@ public class Node
     {
         this.x = x;
         this.y = y;
-        this.isWalkable = isWalkable;
+        this.walkable = isWalkable;
         this.center = center;
         neighbours = new List<Node>();
     }

@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class GridManager : MonoBehaviourSingleton<GridManager>
+public class Grid : MonoBehaviour
 {
     public Tilemap map;
     public Node[,] grid;
@@ -9,8 +10,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     private void Awake()
     {
         CreateMap();
-        GameManager.update += UpdateGrid;
-        GameManager.gizmos += DrawGizmos;
     }
 
     private void CreateMap()
@@ -49,7 +48,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
             {
                 Vector3 center = map.GetCellCenterWorld(map.cellBounds.min + new Vector3Int(x, y, 0));
                 bool isWalkable = !Physics2D.OverlapCircle(center, .45f);
-                grid[x, y].isWalkable = isWalkable;
+                grid[x, y].walkable = isWalkable;
             }
         }
     }
@@ -66,32 +65,20 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     }
 
     public Node GetNode(int x, int y) => grid[x, y];
-
-    private void DrawGizmos()
+    
+    public List<Node> path;
+    void OnDrawGizmos()
     {
-        for (int x = 0; x < map.size.x; x++)
+        if (grid != null)
         {
-            for (int y = 0; y < map.size.y; y++)
+            foreach (Node n in grid)
             {
-                Vector2Int coordinate = new Vector2Int(x, y);
-                Vector3 center = map.GetCellCenterWorld(map.cellBounds.min + (Vector3Int)coordinate);
-                Gizmos.color = grid[x, y].isWalkable ? Color.green : Color.red;
-                Gizmos.DrawCube(center, map.cellSize * .9f);
+                Gizmos.color = (n.walkable) ? Color.white : Color.red;
+                if (path != null)
+                    if (path.Contains(n))
+                        Gizmos.color = Color.black;
+                Gizmos.DrawCube(n.center, map.cellSize * .9f);
             }
         }
-
-        Gizmos.color = Color.blue;
-        Node mouseNode = GetNode(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        Vector3 pos;
-        Vector2 size = map.cellSize * .9f;
-        if (mouseNode != null)
-        {
-            pos = mouseNode.center;
-            Gizmos.DrawCube(pos, size);
-        }
-
-        //pos = PlayerController.Instance.transform.position;
-        //Gizmos.color = Color.white;
-        //Gizmos.DrawCube(pos, size);
     }
 }

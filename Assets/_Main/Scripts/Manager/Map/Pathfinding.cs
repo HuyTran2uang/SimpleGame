@@ -1,85 +1,56 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-public class PathNode
+public class Pathfinding : MonoBehaviour
 {
-    public int x, y, gCost, hCost;
-    public PathNode parent;
-    public List<PathNode> neighbours;
-    public int fCost => gCost + hCost;
+    public Transform seeker, target;
+    public Grid grid;
 
-    public PathNode(int x, int y)
+    private void Update()
     {
-        this.x = x;
-        this.y = y;
-    }
-}
-
-public class Pathfinding
-{
-    PathNode[,] grid;
-
-    public Pathfinding(int width, int height, Node[,] grid)
-    {
-        this.grid = new PathNode[width, height];
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                
-                this.grid[x, y] = new PathNode(x, y);
-            }
-        }
-
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                var neightbours = grid[x, y].neighbours.Select(i => this.grid[i.x, i.y]).ToList();
-                this.grid[x, y].neighbours = neightbours;
-            }
-        }
+        FindPath(seeker.position, target.position);
     }
 
-    public List<Node> FindPath(Vector3 startPos, Vector3 endPos)
+    public void FindPath(Vector3 startPos, Vector3 targetPos)
     {
-        Node startNode = GridManager.Instance.GetNode(startPos);
-        PathNode start = grid[startNode.x, startNode.y];
-        Node endNode = GridManager.Instance.GetNode(endPos);
-        PathNode end = grid[endNode.x, endNode.y];
-        return FindPath(start, end);
+        Node start = grid.GetNode(startPos);
+        Node target = grid.GetNode(targetPos);
+        FindPath(start, target);
     }
 
-    public List<Node> FindPath(PathNode start, PathNode end)
+    public void FindPath(Node start, Node target)
     {
-        List<PathNode> open = new List<PathNode>();
-        HashSet<PathNode> closed = new HashSet<PathNode>();
+        List<Node> open = new List<Node>();
+        HashSet<Node> closed = new HashSet<Node>();
 
         open.Add(start);
 
         while (open.Count > 0)
         {
-            PathNode current = open[0];
-            foreach (var node in open)
+            Node current = open[0];
+            foreach (Node node in open)
                 if(node.fCost < current.fCost || node.fCost == current.fCost && node.hCost < current.hCost)
                     current = node;
 
             open.Remove(current);
             closed.Add(current);
 
-            if (current == end) return RetracePath(start, end);
-
-            foreach (var neighbour in current.neighbours)
+            if (current == target)
             {
-                if(!GridManager.Instance.GetNode(neighbour.x, neighbour.y).isWalkable || closed.Contains(neighbour))
+                RetracePath(start, target);
+                return;
+            }
+
+            foreach (Node neighbour in current.neighbours)
+            {
+                if(!neighbour.walkable || closed.Contains(neighbour))
                     continue;
 
-                int new_gCost = current.gCost + Distance(current, neighbour);
+                int new_gCost = current.gCost + GetDistance(current, neighbour);
                 if(new_gCost < neighbour.gCost || !open.Contains(neighbour))
                 {
                     neighbour.gCost = new_gCost;
-                    neighbour.hCost = Distance(neighbour, end);
+                    neighbour.hCost = GetDistance(neighbour, target);
                     neighbour.parent = current;
 
                     if (!open.Contains(neighbour))
@@ -88,24 +59,26 @@ public class Pathfinding
             }
         }
 
-        return null;
+        grid.path = null;
+        return;
     }
 
-    private List<Node> RetracePath(PathNode start, PathNode end)
+    
+    private void RetracePath(Node start, Node end)
     {
         List<Node> path = new List<Node>();
-        PathNode current = end;
-        path.Add(GridManager.Instance.GetNode(current.x, current.y));
-        while (current.parent != start)
+        Node current = end;
+
+        while (current != start)
         {
+            path.Add(current);
             current = current.parent;
-            path.Add(GridManager.Instance.GetNode(current.x, current.y));
         }
         path.Reverse();
-        return path;
+        grid.path = path;
     }
 
-    private int Distance(PathNode nodeA, PathNode nodeB)
+    private int GetDistance(Node nodeA, Node nodeB)
     {
         return Mathf.Abs(nodeA.x - nodeB.x) + Mathf.Abs(nodeA.y - nodeB.y);
     }
