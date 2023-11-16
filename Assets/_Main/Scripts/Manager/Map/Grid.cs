@@ -2,17 +2,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Grid : MonoBehaviour
+[System.Serializable]
+public class Grid
 {
     public Tilemap map;
     public Node[,] grid;
 
-    private void Awake()
+    public Grid(Tilemap map)
     {
+        this.map = map;
         CreateMap();
     }
 
-    private void CreateMap()
+    public void CreateMap()
     {
         grid = new Node[map.size.x, map.size.y];
         //create grid
@@ -40,7 +42,7 @@ public class Grid : MonoBehaviour
         }
     }
 
-    private void UpdateGrid()
+    public void UpdateGrid()
     {
         for (int x = 0; x < map.size.x; x++)
         {
@@ -65,20 +67,8 @@ public class Grid : MonoBehaviour
     }
 
     public Node GetNode(int x, int y) => grid[x, y];
+
+    public int Size => map.size.x * map.size.y;
     
     public List<Node> path;
-    void OnDrawGizmos()
-    {
-        if (grid != null)
-        {
-            foreach (Node n in grid)
-            {
-                Gizmos.color = (n.walkable) ? Color.white : Color.red;
-                if (path != null)
-                    if (path.Contains(n))
-                        Gizmos.color = Color.black;
-                Gizmos.DrawCube(n.center, map.cellSize * .9f);
-            }
-        }
-    }
 }
