@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class MapManager : MonoBehaviourSingleton<MapManager>, IReadData, IInitor
+public class MapManager : MonoBehaviourSingleton<MapManager>, IReadData, IInitable
 {
     public Tilemap[] maps;
     public int mapId; //index
@@ -14,7 +14,7 @@ public class MapManager : MonoBehaviourSingleton<MapManager>, IReadData, IInitor
         mapId = 0;
     }
 
-    void IInitor.Init()
+    void IInitable.Init()
     {
         grid = new Grid(GetCurrentMap);
     }

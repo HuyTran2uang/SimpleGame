@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,17 +7,19 @@ public class Pathfinding
 {
     public Pathfinding() { }
 
-    public void FindPath(Vector3 startPos, Vector3 targetPos, Grid grid)
+    public void StartFinfPath(MonoBehaviour mono, Vector3 startPos, Vector3 targetPos, Grid grid, Action<Vector3[], bool> onFindFinished)
+    {
+        mono.StartCoroutine(FindPath(startPos, targetPos, grid, onFindFinished));
+    }
+
+    private IEnumerator FindPath(Vector3 startPos, Vector3 targetPos, Grid grid, Action<Vector3[], bool> onFindFinished)
     {
         Node start = grid.GetNode(startPos);
         Node target = grid.GetNode(targetPos);
-        FindPath(start, target, grid);
-    }
-
-    private void FindPath(Node start, Node target, Grid grid)
-    {
         Heap<Node> open = new Heap<Node>(grid.Size);
         HashSet<Node> closed = new HashSet<Node>();
+        bool isSuccess = false;
+        Vector3[] waypoints;
 
         open.Add(start);
 
@@ -26,17 +30,17 @@ public class Pathfinding
 
             if (current == target)
             {
-                RetracePath(start, target);
-                return;
+                isSuccess = true;
+                break;
             }
 
             foreach (Node neighbour in current.neighbours)
             {
-                if(!neighbour.walkable || closed.Contains(neighbour))
+                if (!neighbour.walkable || closed.Contains(neighbour))
                     continue;
 
                 int new_gCost = current.gCost + GetDistance(current, neighbour);
-                if(new_gCost < neighbour.gCost || !open.Contains(neighbour))
+                if (new_gCost < neighbour.gCost || !open.Contains(neighbour))
                 {
                     neighbour.gCost = new_gCost;
                     neighbour.hCost = GetDistance(neighbour, target);
@@ -48,11 +52,12 @@ public class Pathfinding
             }
         }
 
-        grid.path = null;
-        return;
+        yield return null;
+        waypoints = isSuccess ? RetracePath(start, target) : null;
+        onFindFinished.Invoke(waypoints, isSuccess);
     }
     
-    private void RetracePath(Node start, Node end)
+    private Vector3[] RetracePath(Node start, Node end)
     {
         List<Node> path = new List<Node>();
         Node current = end;
@@ -62,7 +67,28 @@ public class Pathfinding
             path.Add(current);
             current = current.parent;
         }
-        path.Reverse();
+
+        Vector3[] waypoint = SimplifyPath(path);
+        Array.Reverse(waypoint);
+        return waypoint;
+    }
+
+    private Vector3[] SimplifyPath(List<Node> path)
+    {
+        List<Vector3> waypoints = new List<Vector3>();
+        Vector2 directionOld = Vector2.zero;
+
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            Vector2 directionNew = new Vector2(path[i].x - path[i + 1].x, path[i].y - path[i + 1].y);
+            if(directionNew != directionOld)
+            {
+                waypoints.Add(path[i].center);
+            }
+            directionOld = directionNew;
+        }
+
+        return waypoints.ToArray();
     }
 
     private int GetDistance(Node nodeA, Node nodeB)

@@ -6,11 +6,12 @@ public class Root : MonoBehaviourSingleton<Root>
     private void Awake()
     {
         LoadData();
+        Init();
     }
 
     private void Start()
     {
-        Init();
+
     }
 
     private void LoadData()
@@ -22,7 +23,7 @@ public class Root : MonoBehaviourSingleton<Root>
 
     private void Init()
     {
-        var initors = FindObjectsOfType<MonoBehaviour>().OfType<IInitor>();
+        var initors = FindObjectsOfType<MonoBehaviour>().OfType<IInitable>();
         foreach (var initor in initors)
             initor.Init();
     }
