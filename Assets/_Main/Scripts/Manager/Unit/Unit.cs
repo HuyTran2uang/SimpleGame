@@ -16,9 +16,9 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
+    public void OnPathFound(Vector3[] newPath, bool isSuccessed)
     {
-        if (pathSuccessful && newPath != null && newPath.Length > 0)
+        if (isSuccessed)
         {
             path = newPath;
             targetIndex = 0;

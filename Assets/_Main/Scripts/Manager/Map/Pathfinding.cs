@@ -19,7 +19,7 @@ public class Pathfinding
         Heap<Node> open = new Heap<Node>(grid.Size);
         HashSet<Node> closed = new HashSet<Node>();
         bool isSuccess = false;
-        Vector3[] waypoints;
+        Vector3[] waypoints = new Vector3[0];
 
         open.Add(start);
 
@@ -53,7 +53,11 @@ public class Pathfinding
         }
 
         yield return null;
-        waypoints = isSuccess ? RetracePath(start, target) : null;
+        if(isSuccess)
+        {
+            waypoints = RetracePath(start, target);
+            isSuccess = waypoints.Length > 0;
+        }
         onFindFinished.Invoke(waypoints, isSuccess);
     }
     
