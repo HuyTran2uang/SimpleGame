@@ -1,20 +1,12 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class Unit : MonoBehaviour
 {
-    public Transform target;
-    float speed = 20;
+    protected float speed = 2;
     Vector3[] path;
     int targetIndex;
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            PathRequestManager.Instance.RequestPath(transform.position, target.position, OnPathFound);
-        }
-    }
 
     public void OnPathFound(Vector3[] newPath, bool isSuccessed)
     {
@@ -27,6 +19,7 @@ public class Unit : MonoBehaviour
         }
     }
 
+    protected Action onCompleted, onTouch;
     IEnumerator FollowPath()
     {
         Vector3 currentWaypoint = path[0];
@@ -37,14 +30,31 @@ public class Unit : MonoBehaviour
                 targetIndex++;
                 if (targetIndex >= path.Length)
                 {
-                    yield break;
+                    break;
                 }
                 currentWaypoint = path[targetIndex];
+                var colliders = Physics2D.OverlapCircleAll(currentWaypoint, .45f);
+                bool isTouch = false;
+                foreach (var i in colliders)
+                {
+                    if (i.gameObject != this.gameObject)
+                    {
+                        isTouch = true;
+                        break;
+                    }
+                }
+                if (isTouch)
+                {
+                    onTouch?.Invoke();
+                    break;
+                }
             }
 
             transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
+            
             yield return null;
         }
+        onCompleted?.Invoke();
     }
 
     public void OnDrawGizmos()
@@ -54,7 +64,7 @@ public class Unit : MonoBehaviour
             for (int i = targetIndex; i < path.Length; i++)
             {
                 Gizmos.color = Color.black;
-                Gizmos.DrawCube(path[i], Vector3.one);
+                //Gizmos.DrawCube(path[i], Vector3.one);
 
                 if (i == targetIndex)
                 {

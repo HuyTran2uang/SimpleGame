@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class Pathfinding
 {
-    public Pathfinding() { }
-
     public void StartFinfPath(MonoBehaviour mono, Vector3 startPos, Vector3 targetPos, Grid grid, Action<Vector3[], bool> onFindFinished)
     {
         mono.StartCoroutine(FindPath(startPos, targetPos, grid, onFindFinished));
@@ -34,9 +32,9 @@ public class Pathfinding
                 break;
             }
 
-            foreach (Node neighbour in current.neighbours)
+            foreach (Node neighbour in grid.GetNeighbours(current))
             {
-                if (!neighbour.walkable || closed.Contains(neighbour))
+                if (!neighbour.walkable && neighbour != target || closed.Contains(neighbour))
                     continue;
 
                 int new_gCost = current.gCost + GetDistance(current, neighbour);
@@ -48,6 +46,8 @@ public class Pathfinding
 
                     if (!open.Contains(neighbour))
                         open.Add(neighbour);
+                    else
+                        open.UpdateItem(neighbour);
                 }
             }
         }
@@ -85,11 +85,12 @@ public class Pathfinding
         for (int i = 0; i < path.Count - 1; i++)
         {
             Vector2 directionNew = new Vector2(path[i].x - path[i + 1].x, path[i].y - path[i + 1].y);
-            if(directionNew != directionOld)
-            {
-                waypoints.Add(path[i].center);
-            }
-            directionOld = directionNew;
+            //if(directionNew != directionOld)
+            //{
+            //    waypoints.Add(path[i].center);
+            //}
+            //directionOld = directionNew;
+            waypoints.Add(path[i].center);
         }
 
         return waypoints.ToArray();

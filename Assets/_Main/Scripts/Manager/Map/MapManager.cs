@@ -5,18 +5,23 @@ public class MapManager : MonoBehaviourSingleton<MapManager>, IReadData, IInitab
 {
     public Tilemap[] maps;
     public int mapId; //index
-    [HideInInspector] public Grid grid;
+    public Grid grid;
 
     public Tilemap GetCurrentMap => maps[mapId];
 
-    void IReadData.Read()
+    public void Read()
     {
         mapId = 0;
     }
 
-    void IInitable.Init()
+    public void Init()
     {
         grid = new Grid(GetCurrentMap);
+    }
+
+    private void Update()
+    {
+        grid.UpdateGrid();
     }
 
     public void ChangeMap(int id)

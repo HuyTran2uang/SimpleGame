@@ -23,7 +23,7 @@ public class PathRequestManager : MonoBehaviourSingleton<PathRequestManager>, II
     Pathfinding pathfinding;
     bool isProcessingPath;
 
-    void IInitable.Init()
+    public void Init()
     {
         pathRequests = new Queue<PathRequest>();
         pathfinding = new Pathfinding();

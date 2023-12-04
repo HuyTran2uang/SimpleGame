@@ -28,18 +28,6 @@ public class Grid
                 grid[x, y] = node;
             }
         }
-
-        //set neighbours
-        for (int x = 0; x < map.size.x; x++)
-        {
-            for (int y = 0; y < map.size.y; y++)
-            {
-                if (x > 0) grid[x, y].neighbours.Add(grid[x - 1, y]);
-                if (y > 0) grid[x, y].neighbours.Add(grid[x, y - 1]);
-                if (x + 1 < map.size.x) grid[x, y].neighbours.Add(grid[x + 1, y]);
-                if (y + 1 < map.size.y) grid[x, y].neighbours.Add(grid[x, y + 1]);
-            }
-        }
     }
 
     public void UpdateGrid()
@@ -66,9 +54,13 @@ public class Grid
         return grid[x, y];
     }
 
-    public Node GetNode(int x, int y) => grid[x, y];
-
     public int Size => map.size.x * map.size.y;
-    
-    public List<Node> path;
+
+    public IEnumerable<Node> GetNeighbours(Node node)
+    {
+        if (node.x > 0 && grid[node.x - 1, node.y].walkable) yield return grid[node.x - 1, node.y];
+        if (node.y > 0 && grid[node.x, node.y - 1].walkable) yield return grid[node.x, node.y - 1];
+        if (node.x + 1 < map.size.x && grid[node.x + 1, node.y].walkable) yield return grid[node.x + 1, node.y];
+        if (node.y + 1 < map.size.y && grid[node.x, node.y + 1].walkable) yield return grid[node.x, node.y + 1];
+    }
 }
